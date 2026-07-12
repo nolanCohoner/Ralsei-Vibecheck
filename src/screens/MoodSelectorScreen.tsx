@@ -23,6 +23,7 @@ import { getPlaylistForMood } from '../services/deezer';
 import { PixelEmoji } from '../components/PixelEmoji';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { PixelIcon } from '../components/PixelIcon';
+import { playSFX } from '../utils/sfx';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -80,6 +81,7 @@ export const MoodSelectorScreen: React.FC<any> = ({ navigation }) => {
 
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
+    playSFX('battleenter');
     navigation.navigate('Playlist', {
       moodId: 'search-' + searchQuery.trim(),
       moodName: `RECHERCHE: "${searchQuery.trim().substring(0, 10)}"`,
@@ -102,6 +104,7 @@ export const MoodSelectorScreen: React.FC<any> = ({ navigation }) => {
 
   const handleSelectMood = async (mood: Mood) => {
     if (loadingMood !== null) return;
+    playSFX('battleenter');
     setLoadingMood(mood.id);
 
     try {

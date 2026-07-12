@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document Individuel — VibeCheck — Nolan Cohoner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&family=Inter:wght@400;600;700&display=swap');
+
+    :root {
+      --green-dark: #1a2e1a;
+      --green-mid: #2d5a2d;
+      --green-light: #4a9e4a;
+      --green-neon: #7dc27a;
+      --cream: #f0ecd4;
+      --white: #ffffff;
+      --black: #0a0f0a;
+      --gold: #d4a847;
+      --red-soul: #e04040;
+      --border: 3px solid #4a9e4a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e4cc;
+      color: var(--black);
+      font-size: 11pt;
+      line-height: 1.6;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--green-dark);
+      padding: 24px 32px 20px;
+      position: relative;
+      border-bottom: 6px solid var(--green-neon);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-text {
+      flex: 1;
+    }
+
+    .pixel-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 13pt;
+      color: var(--green-neon);
+      margin-bottom: 6px;
+      text-shadow: 2px 2px 0 #1a3a1a, 4px 4px 0 #0a1a0a;
+      letter-spacing: 1px;
+    }
+
+    .pixel-subtitle {
+      font-family: 'VT323', monospace;
+      font-size: 18pt;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .header-meta {
+      font-family: 'Inter', sans-serif;
+      font-size: 8.5pt;
+      color: #9fcda8;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-meta span {
+      background: rgba(74, 158, 74, 0.2);
+      border: 1px solid #4a9e4a;
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    .header-ralsei {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+      padding-left: 16px;
+    }
+
+    .header-ralsei img {
+      width: 36px;
+      height: auto;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 6px rgba(125, 194, 122, 0.8));
+    }
+
+    /* ===== SOUL ICON ===== */
+    .soul {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: var(--red-soul);
+      clip-path: polygon(50% 0%, 100% 40%, 80% 100%, 50% 80%, 20% 100%, 0% 40%);
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    /* ===== CONTENT WRAPPER ===== */
+    .content {
+      padding: 28px 36px;
+      position: relative;
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .section-title {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8pt;
+      color: var(--green-mid);
+      padding: 6px 12px 6px 10px;
+      border-left: 5px solid var(--green-neon);
+      background: linear-gradient(90deg, #eaf5ea 0%, transparent 100%);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-content {
+      padding-left: 16px;
+      border-left: 2px solid #c8e6c8;
+    }
+
+    /* ===== RPG DIALOGUE BOX ===== */
+    .dialog-box {
+      background: #f5fff5;
+      border: 3px solid var(--green-mid);
+      border-radius: 2px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      position: relative;
+      box-shadow: 4px 4px 0 #c0d8c0, inset 0 0 0 2px white;
+    }
+
+    .dialog-box::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border: 1px solid var(--green-light);
+      pointer-events: none;
+    }
+
+    .dialog-box p {
+      font-size: 10.5pt;
+      line-height: 1.7;
+      color: #1a2e1a;
+    }
+
+    .dialog-box.highlight {
+      background: linear-gradient(135deg, #f0fff0 0%, #e8f5e8 100%);
+      border-color: var(--green-light);
+    }
+
+    .dialog-box.warning {
+      background: linear-gradient(135deg, #fffef0 0%, #fff9e0 100%);
+      border-color: var(--gold);
+      box-shadow: 4px 4px 0 #e0d090;
+    }
+
+    /* ===== INFO GRID ===== */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .info-card {
+      border: 2px solid var(--green-neon);
+      background: linear-gradient(135deg, #f0fff0, #e8ffe8);
+      padding: 10px 12px;
+      border-radius: 2px;
+    }
+
+    .info-card-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6pt;
+      color: var(--green-mid);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .info-card-value {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+
+    /* ===== BULLET LIST ===== */
+    .pixel-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .pixel-list li {
+      padding: 5px 0 5px 18px;
+      position: relative;
+      font-size: 10.5pt;
+      line-height: 1.6;
+      border-bottom: 1px dotted #c8e6c8;
+    }
+
+    .pixel-list li:last-child {
+      border-bottom: none;
+    }
+
+    .pixel-list li::before {
+      content: '♦';
+      position: absolute;
+      left: 0;
+      color: var(--green-neon);
+      font-size: 9pt;
+      top: 5px;
+    }
+
+    .pixel-list.check li::before {
+      content: '✓';
+      color: #4a9e4a;
+    }
+
+    .pixel-list.hard li::before {
+      content: '✗';
+      color: #c05050;
+    }
+
+    /* ===== CHALLENGE BOX ===== */
+    .challenge-item {
+      background: #fff9f0;
+      border: 2px solid #d4a847;
+      border-left: 5px solid #c05050;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      border-radius: 1px;
+    }
+
+    .challenge-item strong {
+      display: block;
+      font-family: 'VT323', monospace;
+      font-size: 14pt;
+      color: #8b3030;
+      margin-bottom: 4px;
+    }
+
+    .challenge-item p {
+      font-size: 10pt;
+      color: #4a3020;
+      line-height: 1.6;
+    }
+
+    /* ===== RALSEI FLOAT ===== */
+    .ralsei-float {
+      float: right;
+      margin: 0 0 8px 14px;
+      text-align: center;
+    }
+
+    .ralsei-float img {
+      width: 50px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px rgba(125, 194, 122, 0.7));
+    }
+
+    .ralsei-float-left {
+      float: left;
+      margin: 0 14px 8px 0;
+      text-align: center;
+    }
+
+    .ralsei-float-left img {
+      width: 50px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 8px rgba(125, 194, 122, 0.7));
+    }
+
+    /* ===== QUOTE ===== */
+    .quote {
+      font-family: 'VT323', monospace;
+      font-size: 16pt;
+      color: var(--green-mid);
+      text-align: center;
+      padding: 10px;
+      border-top: 2px dashed #9fcda8;
+      border-bottom: 2px dashed #9fcda8;
+      margin: 14px 0;
+    }
+
+    /* ===== TAG BADGES ===== */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      background: var(--green-dark);
+      color: var(--green-neon);
+      font-family: 'VT323', monospace;
+      font-size: 12pt;
+      padding: 2px 10px;
+      border-radius: 1px;
+      border: 1px solid var(--green-neon);
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--green-dark);
+      border-top: 4px solid var(--green-neon);
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 6pt;
+      color: #4a9e4a;
+    }
+
+    .footer-ralsei {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .footer-ralsei img {
+      width: 28px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 4px rgba(125, 194, 122, 0.9));
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      text-align: center;
+      color: var(--green-light);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 7pt;
+      margin: 16px 0;
+      letter-spacing: 4px;
+    }
+
+    /* ===== STAT BAR ===== */
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-family: 'VT323', monospace;
+      font-size: 13pt;
+      color: var(--green-dark);
+      min-width: 110px;
+    }
+
+    .stat-bar-bg {
+      flex: 1;
+      height: 12px;
+      background: #d0e8d0;
+      border: 2px solid var(--green-mid);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green-mid), var(--green-neon));
+    }
+
+    .stat-value {
+      font-family: 'VT323', monospace;
+      font-size: 13pt;
+      color: var(--green-mid);
+      min-width: 32px;
+      text-align: right;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+      }
+
+      @page {
+        margin: 0;
+        size: A4;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- ========== HEADER ========== -->
+    <div class="header">
+      <div class="header-inner">
+        <div class="header-text">
+          <div class="pixel-title">♥ VIBECHECK</div>
+          <div class="pixel-subtitle">Document Individuel — Évaluation React Native M1</div>
+          <div class="header-meta">
+            <span>👤 Nolan Cohoner</span>
+            <span>🎓 M1 Dev Full Stack</span>
+            <span>🏫 SUP de VINCI</span>
+            <span>📅 Juillet 2026</span>
+            <span>👤 Solo</span>
+          </div>
+        </div>
+        <div class="header-ralsei">
+          <img src="src/assets/images/ralsei_standing.webp" alt="Ralsei" />
+          <img src="src/assets/images/ralsei_sing.webp" alt="Ralsei chante" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="content">
+
+      <!-- Intro / Identité -->
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-card-label">Étudiant</span>
+          <span class="info-card-value">Nolan Cohoner</span>
+        </div>
+        <div class="info-card">
+          <span class="info-card-label">Formation</span>
+          <span class="info-card-value">M1 Développeur Full Stack</span>
+        </div>
+        <div class="info-card">
+          <span class="info-card-label">Sujet traité</span>
+          <span class="info-card-value">Sujet 4 — VibeCheck</span>
+        </div>
+        <div class="info-card">
+          <span class="info-card-label">Mode de travail</span>
+          <span class="info-card-value">Solo (Projet individuel)</span>
+        </div>
+      </div>
+
+      <!-- Section 1 : Ce que j'ai fait -->
+      <div class="section">
+        <div class="section-title"><span class="soul"></span>Ma contribution au projet</div>
+        <div class="section-content">
+
+          <div class="ralsei-float">
+            <img src="src/assets/images/ralsei_standing.webp" alt="Ralsei standing" />
+          </div>
+
+          <div class="dialog-box highlight">
+            <p>Travaillant seul sur ce projet, j'ai pris en charge l'<strong>intégralité du développement</strong> de
+              l'application, de l'architecture technique à la direction artistique. Voici un résumé de mes contributions
+              :</p>
+          </div>
+
+          <ul class="pixel-list check">
+            <li><strong>Architecture</strong> : Mise en place de la structure du projet sous TypeScript, avec séparation
+              des responsabilités en <code>src/screens</code>, <code>components</code>, <code>hooks</code>,
+              <code>services</code>, <code>utils</code>.</li>
+            <li><strong>Authentification Supabase</strong> : Inscription, connexion, déconnexion et gestion des erreurs
+              lisibles.</li>
+            <li><strong>Sélecteur d'humeur 3D</strong> : Carrousel animé avec rotation, scale et opacité dynamiques
+              selon la carte active.</li>
+            <li><strong>API Deezer</strong> : Génération dynamique de playlists de 20 titres selon l'humeur choisie,
+              avec filtrage prioritaire Metal pour l'humeur Colérique.</li>
+            <li><strong>Lecteur audio global</strong> : MiniPlayer persistant basé sur <code>expo-av</code> (Play/Pause,
+              Suivant, Précédent, barre de progression).</li>
+            <li><strong>Favoris & Historique</strong> : Persistance dans Supabase avec affichage en calendrier rétro.
+            </li>
+            <li><strong>Partage de playlist</strong> : Export et partage natif via <code>expo-sharing</code> (Bonus
+              validé).</li>
+            <li><strong>SFX interactifs</strong> : Intégration intelligente des vrais sons de Deltarune à chaque bouton
+              de l'app (sélection, navigation, sauvegarde, erreur, surprise sur Ralsei).</li>
+            <li><strong>UI Pixel Art custom</strong> : Direction artistique complète inspirée de Deltarune, avec Ralsei
+              animé, Fontaine Sombre animée plein écran, icônes dessinées en grilles de pixels.</li>
+            <li><strong>APK compilé</strong> : Build final via EAS Build (Expo cloud), APK livré fonctionnel.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 2 : Pourquoi j'ai aimé -->
+      <div class="section">
+        <div class="section-title"><span class="soul"></span>Pourquoi j'ai adoré ce projet</div>
+        <div class="section-content">
+          <div class="ralsei-float-left">
+            <img src="src/assets/images/ralsei_sing.webp" alt="Ralsei chante" />
+          </div>
+
+          <div class="dialog-box">
+            <p>
+              Malgré toutes les difficultés que j'ai rencontrées, j'ai <strong>vraiment adoré</strong> travailler sur
+              VibeCheck. Ce projet m'a donné une liberté créative totale que je n'ai pas souvent, et j'en ai profité au
+              maximum.
+            </p>
+          </div>
+
+          <div class="quote">"Ce projet m'a permis d'allier ma passion du jeu vidéo et du développement."</div>
+
+          <div class="dialog-box highlight">
+            <p>
+              Le sujet étant une application musicale, j'ai eu l'idée de le lier à l'univers de
+              <strong>Deltarune</strong> et à son personnage principal, <strong>Ralsei</strong>. Cela m'a apporté une
+              motivation supplémentaire : chaque écran, chaque son, chaque animation avait un sens dans un univers que
+              j'aime vraiment. Les effets sonores sont les vrais sons du jeu, le logo est stylisé pixel art, et Ralsei
+              accueille l'utilisateur sur la page de connexion en faisant un signe de la main.
+            </p>
+          </div>
+          <div class="tags">
+            <span class="tag">♥ Deltarune</span>
+            <span class="tag">♥ Ralsei</span>
+            <span class="tag">♦ Dark Fountain</span>
+            <span class="tag">♦ Pixel Art</span>
+            <span class="tag">♦ SFX Retro</span>
+            <span class="tag">♦ React Native</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider">— ✦ — ✦ — ✦ —</div>
+
+      <!-- Section 3 : Difficultés -->
+      <div class="section">
+        <div class="section-title"><span class="soul"></span>Difficultés rencontrées</div>
+        <div class="section-content">
+
+          <div class="challenge-item">
+            <strong>⚔ Travail en solo dans un contexte très chargé</strong>
+            <p>
+              J'ai réalisé ce projet entièrement seul. Si cela m'a donné une grande liberté créative, cela représentait
+              aussi une charge de travail considérable sur tous les aspects (design, back-end, front-end, API, tests)
+              sans avoir de binôme pour partager la charge ou se motiver mutuellement.
+            </p>
+          </div>
+
+          <div class="challenge-item">
+            <strong>⚔ Une période de stage très éprouvante</strong>
+            <p>
+              La période de réalisation de ce projet coïncidait avec la fin de mon contrat de stage. Cette période a été
+              <strong>extrêmement stressante</strong> : je me sentais très fortement exploité en tant que stagiaire,
+              avec une charge de travail disproportionnée au sein de l'entreprise. Le soir, en rentrant épuisé, il
+              m'était souvent impossible de trouver l'énergie pour coder, tester ou avancer sur le projet. Cette fatigue
+              accumulée a considérablement ralenti ma progression.
+            </p>
+          </div>
+
+          <div class="challenge-item">
+            <strong>⚔ Le projet de fin d'année en parallèle</strong>
+            <p>
+              Simultanément, je devais gérer le projet de fin d'année en équipe, dont la dynamique était source d'une
+              pression supplémentaire importante. L'équipe était exigeante et il m'était très difficile de jongler entre
+              les deux projets tout en gérant mon stage. Ce projet de groupe a monopolisé une grande partie de mon
+              énergie mentale.
+            </p>
+          </div>
+
+          <div class="challenge-item">
+            <strong>⚔ Problèmes de dépôt GitHub</strong>
+            <p>
+              J'ai également rencontré des problèmes techniques sur mon dépôt GitHub original (corruption du repo,
+              historique compromis), ce qui m'a contraint à <strong>créer un nouveau dépôt GitHub quelques jours
+                seulement avant la date limite</strong> de rendu. Cette situation a généré un stress supplémentaire et
+              m'a fait perdre un temps précieux que j'aurais préféré consacrer au développement.
+            </p>
+          </div>
+
+          <div class="challenge-item">
+            <strong>⚔ Difficultés techniques : EAS Build & assets</strong>
+            <p>
+              Lors de la compilation de l'APK avec EAS Build, le premier build a échoué car le dossier
+              <code>/Profil</code> contenant les avatars et décors de profil avait été exclu par erreur du fichier
+              <code>.easignore</code>. Comprendre et corriger cette erreur (le bundler Metro cherchait des fichiers
+              absents sur le serveur cloud) a nécessité un diagnostic approfondi des logs de compilation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4 : Stats -->
+      <div class="section">
+        <div class="section-title"><span class="soul"></span>Bilan des compétences acquises</div>
+        <div class="section-content">
+          <div class="stat-row">
+            <span class="stat-label">React Native</span>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill" style="width:90%"></div>
+            </div>
+            <span class="stat-value">90%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">TypeScript</span>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill" style="width:85%"></div>
+            </div>
+            <span class="stat-value">85%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Supabase</span>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill" style="width:80%"></div>
+            </div>
+            <span class="stat-value">80%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">API REST</span>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill" style="width:88%"></div>
+            </div>
+            <span class="stat-value">88%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">EAS Build / APK</span>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill" style="width:75%"></div>
+            </div>
+            <span class="stat-value">75%</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">UI / Pixel Art</span>
+            <div class="stat-bar-bg">
+              <div class="stat-bar-fill" style="width:92%"></div>
+            </div>
+            <span class="stat-value">92%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5 : Utilisation de l'IA -->
+      <div class="section">
+        <div class="section-title"><span class="soul"></span>Utilisation de l'Intelligence Artificielle</div>
+        <div class="section-content">
+
+          <div class="dialog-box warning">
+            <p>
+              Je tiens à être <strong>totalement transparent</strong> sur l'utilisation de l'Intelligence Artificielle
+              dans ce projet, car c'est important pour l'évaluation de mon travail réel.
+            </p>
+          </div>
+
+          <div class="info-grid" style="margin-top:12px;">
+            <div class="info-card" style="border-color:#4a9e4a; background:linear-gradient(135deg,#f0fff0,#e0f5e0)">
+              <span class="info-card-label" style="color:#2d5a2d">✓ Réalisé par moi-même</span>
+              <span class="info-card-value" style="font-size:9.5pt; font-weight:400; color:#1a3a1a; line-height:1.6">
+                Toute la logique fonctionnelle de l'application
+              </span>
+            </div>
+            <div class="info-card" style="border-color:#c0a040; background:linear-gradient(135deg,#fffef0,#fff5d0)">
+              <span class="info-card-label" style="color:#806020">⚙ Assisté par IA</span>
+              <span class="info-card-value" style="font-size:9.5pt; font-weight:400; color:#5a4010; line-height:1.6">
+                Principalement la mise en forme de l'interface utilisateur
+              </span>
+            </div>
+          </div>
+
+          <div class="dialog-box" style="margin-top:12px;">
+            <p><strong>Ce que j'ai entièrement conçu et développé moi-même :</strong></p>
+            <ul class="pixel-list check" style="margin-top:8px">
+              <li><strong>L'architecture du projet</strong> : Structure des dossiers, organisation des écrans,
+                séparation des responsabilités (screens / components / hooks / services / utils).</li>
+              <li><strong>Les fonctionnalités principales</strong> : Sélecteur d'humeur, intégration de l'API Deezer,
+                lecteur audio, favoris, historique, partage de playlist.</li>
+              <li><strong>La logique métier</strong> : Filtrage des résultats par humeur, gestion du state global, hooks
+                personnalisés, connexion Supabase.</li>
+              <li><strong>La direction artistique</strong> : Le choix du thème Deltarune / Ralsei, la direction pixel
+                art, le choix des sons, la conception globale de l'expérience utilisateur.</li>
+              <li><strong>Les choix techniques</strong> : Sélection des bibliothèques, configuration Expo / EAS Build,
+                gestion des variables d'environnement.</li>
+            </ul>
+          </div>
+
+          <div class="dialog-box warning" style="margin-top:10px">
+            <p><strong>Ce que j'ai réalisé avec l'assistance de l'IA :</strong></p>
+            <ul class="pixel-list" style="margin-top:8px; list-style:none">
+              <li style="border-color:#d4c080">L'<strong>interface utilisateur (UI)</strong> a été en grande partie
+                générée et mise en forme avec l'aide d'un assistant IA, notamment les styles, les animations visuelles
+                et la mise en page des composants. J'ai défini ce que je voulais obtenir et validé chaque résultat, mais
+                la <em>production du code CSS/style</em> a été assistée.</li>
+              <li style="border-color:#d4c080">Certains blocs de code répétitifs (ex. : icônes pixel art, effets
+                visuels) ont été accélérés grâce à l'IA une fois la logique établie.</li>
+              <li style="border-color:#d4c080">La rédaction de ce document individuel et du README a été réalisée avec
+                l'aide de l'IA sur la base de mes notes personnelles.</li>
+            </ul>
+            <p style="margin-top:10px; font-style:italic; color:#7a6020;">
+              En résumé : <strong>je suis l'auteur de toutes les décisions techniques et fonctionnelles de ce
+                projet.</strong> L'IA a joué un rôle d'assistant sur la mise en forme visuelle, à la manière d'un outil
+              comme Figma ou un générateur de CSS — mais la réflexion, l'architecture et les fonctionnalités sont le
+              fruit de mon travail personnel.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Conclusion -->
+      <div class="dialog-box highlight" style="margin-top:4px; margin-bottom:0">
+        <p style="text-align:center">
+          <strong>Malgré une période très difficile, je suis fier d'avoir livré un projet complet, fonctionnel, compilé
+            en APK et fidèle à mes goûts créatifs. VibeCheck est le projet dont je suis le plus satisfait de toute ma
+            formation.</strong>
+        </p>
+        <div class="quote" style="margin-bottom:0; font-size:18pt">
+          "Après tout, nous pouvons toujours être gentils." — Ralsei, Deltarune ♥
+        </div>
+      </div>
+
+    </div><!-- end content -->
+
+    <!-- ========== FOOTER ========== -->
+    <div class="footer">
+      <div>
+        <div class="footer-text">Nolan Cohoner — M1 Dev Full Stack — SUP de VINCI — 2026</div>
+        <div class="footer-text" style="margin-top:4px; color:#2d5a2d;">VibeCheck — Sujet 4 React Native — Document
+          Individuel</div>
+      </div>
+      <div class="footer-ralsei">
+        <img src="src/assets/images/ralsei.png" alt="Ralsei" />
+        <img src="src/assets/images/ralsei_standing.webp" alt="Ralsei standing" />
+        <img src="src/assets/images/ralsei_sing.webp" alt="Ralsei chante" />
+      </div>
+    </div>
+
+  </div><!-- end page -->
+</body>
+
+</html>

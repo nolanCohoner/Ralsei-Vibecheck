@@ -18,9 +18,11 @@ import { signUp, signIn } from '../services/auth';
 import { SoulIcon } from '../components/SoulIcon';
 import { DarkFountain } from '../components/DarkFountain';
 import { PixelIcon } from '../components/PixelIcon';
+import { playSFX, playRandomSFX } from '../utils/sfx';
 
 const LogoImg = require('../../ConnexionLogin/logo.png');
 const RalseiImg = require('../assets/ralsei/Joyeux.png');
+const RalseiWaveImg = require('../../ConnexionLogin/Ralsei_overworld_wave (1).webp');
 
 // Palette VibeCheck
 const C = {
@@ -58,9 +60,15 @@ export const LoginScreen: React.FC = () => {
       const { error } = isRegistering
         ? await signUp(email, password)
         : await signIn(email, password);
-      if (error) setErrorMsg(error.message);
+      if (error) {
+        setErrorMsg(error.message);
+        playSFX('damage');
+      } else {
+        playSFX(isRegistering ? 'item' : 'select');
+      }
     } catch (_err) {
       setErrorMsg('Une erreur est survenue.');
+      playSFX('damage');
     } finally {
       setLoading(false);
     }
@@ -69,15 +77,16 @@ export const LoginScreen: React.FC = () => {
   const handleToggleMode = () => {
     setIsRegistering(!isRegistering);
     setErrorMsg(null);
+    playSFX('move');
   };
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-      <StatusBar barStyle="light-content" backgroundColor="#0F120F" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
       {/* === FOND ANIMÉ DARK FOUNTAIN === */}
       <View style={styles.fountainBackground} pointerEvents="none">
-        <DarkFountain size={220} />
+        <DarkFountain fullscreen />
       </View>
 
       <KeyboardAvoidingView
@@ -93,11 +102,6 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.logoSection}>
             <Image source={LogoImg} style={styles.logoImage} resizeMode="contain" />
             <Text style={styles.tagline}>Ton humeur, ta musique.</Text>
-          </View>
-
-          {/* === AVATAR RALSEI D'ACCUEIL === */}
-          <View style={styles.ralseiHeaderContainer}>
-            <Image source={RalseiImg} style={styles.ralseiHeaderImage} resizeMode="contain" />
           </View>
 
           {/* === FORMULAIRE DOUBLE BORDURE === */}
@@ -144,7 +148,7 @@ export const LoginScreen: React.FC = () => {
                     autoCapitalize="none"
                     keyboardType="email-address"
                     autoComplete="email"
-                    onFocus={() => setFocusedField('email')}
+                    onFocus={() => { setFocusedField('email'); playSFX('text'); }}
                     onBlur={() => setFocusedField(null)}
                   />
                 </View>
@@ -176,7 +180,7 @@ export const LoginScreen: React.FC = () => {
                     onChangeText={setPassword}
                     autoCapitalize="none"
                     autoComplete="password"
-                    onFocus={() => setFocusedField('password')}
+                    onFocus={() => { setFocusedField('password'); playSFX('text'); }}
                     onBlur={() => setFocusedField(null)}
                   />
                   <TouchableOpacity
@@ -237,6 +241,20 @@ export const LoginScreen: React.FC = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* === RALSEI WORLD WAVE — BAS GAUCHE === */}
+      <TouchableOpacity
+        style={styles.ralseiWaveContainer}
+        onPress={() => playRandomSFX('fun')}
+        activeOpacity={0.8}
+      >
+        <Image
+          source={RalseiWaveImg}
+          style={styles.ralseiWaveImage}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 };
@@ -244,14 +262,12 @@ export const LoginScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: '#0F120F',
+    backgroundColor: '#000000',
     position: 'relative',
   },
   fountainBackground: {
     ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.18,
+    opacity: 0.25,
     zIndex: 0,
   },
   container: { flex: 1, zIndex: 1 },
@@ -265,13 +281,16 @@ const styles = StyleSheet.create({
 
   // Logo
   logoSection: {
+    alignSelf: 'stretch',
     alignItems: 'center',
     gap: 8,
     marginBottom: 0,
+    marginHorizontal: -24,
   },
   logoImage: {
-    width: 220,
-    height: 90,
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1.8,
   },
   tagline: {
     fontSize: 7,
@@ -279,17 +298,6 @@ const styles = StyleSheet.create({
     color: '#E3EBD0',
     letterSpacing: 1,
     marginTop: 8,
-  },
-
-  // Ralsei Header
-  ralseiHeaderContainer: {
-    alignItems: 'center',
-    marginBottom: -16,
-    zIndex: 3,
-  },
-  ralseiHeaderImage: {
-    width: 64,
-    height: 64,
   },
 
   // Carte formulaire double bordure
@@ -318,7 +326,7 @@ const styles = StyleSheet.create({
     backgroundColor: C.TEAL,
   },
   formTitle: {
-    fontSize: 9,
+    fontSize: 10,
     fontFamily: 'PressStart2P-Regular',
     color: '#FFFFFF',
     letterSpacing: 1,
@@ -334,9 +342,9 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: C.ERROR,
-    fontSize: 7,
+    fontSize: 9,
     fontFamily: 'PressStart2P-Regular',
-    lineHeight: 12,
+    lineHeight: 16,
   },
 
   // Champs
@@ -350,7 +358,7 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   fieldLabel: {
-    fontSize: 7,
+    fontSize: 9,
     fontFamily: 'PressStart2P-Regular',
     color: '#FFFFFF',
     letterSpacing: 1,
@@ -423,7 +431,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3D4D3D',
   },
   separatorText: {
-    fontSize: 7,
+    fontSize: 9,
     fontFamily: 'PressStart2P-Regular',
     color: '#7A8A7A',
   },
@@ -438,16 +446,29 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     color: '#A0B0A0',
-    fontSize: 7,
+    fontSize: 9,
     fontFamily: 'PressStart2P-Regular',
-    lineHeight: 14,
+    lineHeight: 16,
   },
   secondaryLink: {
     color: C.TEAL,
-    fontSize: 7,
+    fontSize: 9,
     fontFamily: 'PressStart2P-Regular',
-    lineHeight: 14,
+    lineHeight: 16,
     textDecorationLine: 'underline',
+  },
+
+  // Ralsei World Wave — décoration bas gauche
+  ralseiWaveContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    zIndex: 10,
+    pointerEvents: 'none',
+  },
+  ralseiWaveImage: {
+    width: 120,
+    height: 120,
   },
 });
 

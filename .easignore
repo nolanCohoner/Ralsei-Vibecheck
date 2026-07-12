@@ -1,0 +1,25 @@
+# Fichiers à exclure lors de l'envoi vers EAS Build (Expo Cloud)
+# Cela accélère grandement la compression et l'upload.
+
+# Exclure les dossiers locaux de maquettes/tests/ressources brutes
+/Album
+/Connexion
+/Favoris
+/Fenetre Lecture Music
+/RalseiVibes
+/Sound Effects (Common)
+/SpriteAssetsDeltarune
+/Suivi
+/evaluation-m1-react-native.pdf
+
+# Dépendances locales et dossiers de build
+node_modules/
+.expo/
+dist/
+web-build/
+
+# Fichiers système
+.DS_Store
+*.pem
+*.jks
+*.key

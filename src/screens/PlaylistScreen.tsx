@@ -19,6 +19,7 @@ import { getFavorites, addFavorite, removeFavorite } from '../services/db';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { Track } from '../utils/constants';
 import { PixelIcon } from '../components/PixelIcon';
+import { playSFX } from '../utils/sfx';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
@@ -105,10 +106,16 @@ export const PlaylistScreen: React.FC<any> = ({ route, navigation }) => {
     const isFav = favorites.includes(track.id);
     if (isFav) {
       const ok = await removeFavorite(track.id);
-      if (ok) setFavorites(prev => prev.filter(id => id !== track.id));
+      if (ok) {
+        setFavorites(prev => prev.filter(id => id !== track.id));
+        playSFX('damage');
+      }
     } else {
       const ok = await addFavorite(track);
-      if (ok) setFavorites(prev => [...prev, track.id]);
+      if (ok) {
+        setFavorites(prev => [...prev, track.id]);
+        playSFX('item');
+      }
     }
   };
 
@@ -129,7 +136,10 @@ export const PlaylistScreen: React.FC<any> = ({ route, navigation }) => {
     }
   };
 
-  const handlePlayTrack = (track: Track) => playTrack(track, tracks, moodName);
+  const handlePlayTrack = (track: Track) => {
+    playSFX('select');
+    playTrack(track, tracks, moodName);
+  };
 
   const renderTrackItem = ({ item, index }: { item: Track; index: number }) => {
     const isCurrent = currentTrack?.id === item.id;

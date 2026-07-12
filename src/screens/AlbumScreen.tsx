@@ -10,6 +10,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { Track } from '../utils/constants';
 import { PixelIcon } from '../components/PixelIcon';
+import { playSFX } from '../utils/sfx';
 
 const { width: SW } = Dimensions.get('window');
 const STAT_H = Platform.OS === 'android' ? ((StatusBar as any).currentHeight || 24) : 44;
@@ -257,7 +258,10 @@ export const AlbumScreen: React.FC = () => {
     }
   };
 
-  const handlePlay = (track: Track) => playTrack(track, filtered, '');
+  const handlePlay = (track: Track) => {
+    playSFX('select');
+    playTrack(track, filtered, '');
+  };
 
   // ── Ligne piste (style Samsung Music + Deltarune) ─────────────────────────
   const renderItem = useCallback(({ item, index }: { item: Track; index: number }) => {

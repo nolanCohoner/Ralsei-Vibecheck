@@ -17,6 +17,7 @@ import { getFavorites, removeFavorite } from '../services/db';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { Track } from '../utils/constants';
 import { PixelIcon } from '../components/PixelIcon';
+import { playSFX } from '../utils/sfx';
 
 const C = {
   CREAM: '#F1F1D3',
@@ -123,13 +124,17 @@ export const FavoritesScreen: React.FC = () => {
   };
 
   const handleRemoveFavorite = async (trackId: string) => {
+    playSFX('damage');
     setRemoving(trackId);
     const success = await removeFavorite(trackId);
     if (success) setTracks(prev => prev.filter(t => t.id !== trackId));
     setRemoving(null);
   };
 
-  const handlePlayTrack = (track: Track) => playTrack(track, tracks);
+  const handlePlayTrack = (track: Track) => {
+    playSFX('select');
+    playTrack(track, tracks);
+  };
 
   const renderTrackItem = ({ item, index }: { item: Track; index: number }) => {
     const isCurrent = currentTrack?.id === item.id;

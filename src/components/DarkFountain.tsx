@@ -12,16 +12,33 @@ const FOUNTAIN_FRAMES = [
   require('../assets/fountain/loop_7.png'),
 ];
 
-export const DarkFountain: React.FC<{ size?: number }> = ({ size = 200 }) => {
+interface DarkFountainProps {
+  size?: number;
+  fullscreen?: boolean;
+}
+
+export const DarkFountain: React.FC<DarkFountainProps> = ({
+  size = 200,
+  fullscreen = false,
+}) => {
   const [frameIndex, setFrameIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setFrameIndex((prev) => (prev + 1) % FOUNTAIN_FRAMES.length);
-    }, 100); // 100ms par frame pour une animation fluide et vivante
-
+    }, 100);
     return () => clearInterval(interval);
   }, []);
+
+  if (fullscreen) {
+    return (
+      <Image
+        source={FOUNTAIN_FRAMES[frameIndex]}
+        style={styles.fullscreenSprite}
+        resizeMode="cover"
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -31,7 +48,7 @@ export const DarkFountain: React.FC<{ size?: number }> = ({ size = 200 }) => {
           styles.sprite,
           {
             width: size,
-            height: size * 1.8, // Format vertical de la fontaine
+            height: size * 1.8,
           },
         ]}
         resizeMode="contain"
@@ -46,6 +63,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sprite: {
+    opacity: 0.85,
+  },
+  fullscreenSprite: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
     opacity: 0.85,
   },
 });

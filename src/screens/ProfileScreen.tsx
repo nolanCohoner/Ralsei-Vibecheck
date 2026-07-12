@@ -23,6 +23,7 @@ import { getMoodHistory, calcStreakDays, getInstallDate, getXP, resetXP } from '
 import { MOODS } from '../utils/constants';
 import { PixelEmoji } from '../components/PixelEmoji';
 import { PixelIcon } from '../components/PixelIcon';
+import { playSFX } from '../utils/sfx';
 import {
   AVATARS_COLLECTION,
   BACKGROUNDS_COLLECTION,
@@ -127,8 +128,10 @@ export const ProfileScreen: React.FC = () => {
     const asset = AVATARS_COLLECTION.find(a => a.id === id);
     if (asset && userLevel < asset.levelRequired) {
       Alert.alert('🔒 Verrouillé', `Cet avatar requiert le Niveau ${asset.levelRequired}. Gagne de l'XP en écoutant des musiques !`);
+      playSFX('damage');
       return;
     }
+    playSFX('save');
     setAvatarId(id);
     await AsyncStorage.setItem(AVATAR_KEY, id);
     setAvatarPickerVisible(false);
@@ -148,8 +151,10 @@ export const ProfileScreen: React.FC = () => {
     const asset = BACKGROUNDS_COLLECTION.find(a => a.id === id);
     if (asset && userLevel < asset.levelRequired) {
       Alert.alert('🔒 Verrouillé', `Ce décor requiert le Niveau ${asset.levelRequired}. Gagne de l'XP en écoutant des musiques !`);
+      playSFX('damage');
       return;
     }
+    playSFX('closet_impact');
     setBgId(id);
     await AsyncStorage.setItem(BG_KEY, id);
     setBgPickerVisible(false);
@@ -185,6 +190,7 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const handleLogout = async () => {
+    playSFX('select');
     setLoading(true);
     try { await signOut(); } catch (_err) {}
     finally { setLoading(false); }
@@ -193,6 +199,7 @@ export const ProfileScreen: React.FC = () => {
   const handleResetData = async () => {
     setResetModalVisible(false);
     setResetting(true);
+    playSFX('damage');
     try {
       const user = getCurrentUser();
       if (!user) return;
