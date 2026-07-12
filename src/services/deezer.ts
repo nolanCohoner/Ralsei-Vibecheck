@@ -157,11 +157,17 @@ const ITUNES_MOOD_QUERIES: Record<string, string[]> = {
     'cant help falling in love elvis',
   ],
   colerique: [
-    'killing in the name rage against machine',
-    'in the end linkin park',
-    'break stuff limp bizkit',
-    'numb linkin park',
-    'chop suey system of a down',
+    'heavy metal classics',
+    'death metal playlist',
+    'thrash metal slayer',
+    'gojira l enfant sauvage',
+    'cannibal corpse hammer',
+    'amon amarth twilight',
+    'arch enemy flies alone',
+    'death pull the plug',
+    'slipknot psychosocial',
+    'metallica master of puppets',
+    'judas priest painkiller',
   ],
   fatigue: [
     'lofi sleep music calm',
@@ -411,26 +417,26 @@ const LOCAL_FALLBACK: Record<string, Omit<Track, 'id'>[]> = {
     { title: 'Die For You', artist: 'The Weeknd', album: 'Starboy', coverUrl: COV[0], previewUrl: SH(12), duration: 30 },
   ],
   colerique: [
-    { title: 'Killing in the Name', artist: 'Rage Against the Machine', album: 'Rage Against the Machine', coverUrl: COV[7], previewUrl: SH(13), duration: 30 },
-    { title: 'Break Stuff', artist: 'Limp Bizkit', album: 'Significant Other', coverUrl: COV[8], previewUrl: SH(14), duration: 30 },
-    { title: 'Last Resort', artist: 'Papa Roach', album: 'Infest', coverUrl: COV[9], previewUrl: SH(15), duration: 30 },
-    { title: 'In the End', artist: 'Linkin Park', album: 'Hybrid Theory', coverUrl: COV[10], previewUrl: SH(16), duration: 30 },
-    { title: 'Chop Suey!', artist: 'System of a Down', album: 'Toxicity', coverUrl: COV[11], previewUrl: SH(1), duration: 30 },
-    { title: 'Bodies', artist: 'Drowning Pool', album: 'Sinner', coverUrl: COV[12], previewUrl: SH(2), duration: 30 },
-    { title: 'Down with the Sickness', artist: 'Disturbed', album: 'The Sickness', coverUrl: COV[13], previewUrl: SH(3), duration: 30 },
-    { title: 'Numb', artist: 'Linkin Park', album: 'Meteora', coverUrl: COV[14], previewUrl: SH(4), duration: 30 },
-    { title: 'One Step Closer', artist: 'Linkin Park', album: 'Hybrid Theory', coverUrl: COV[15], previewUrl: SH(5), duration: 30 },
-    { title: 'Given Up', artist: 'Linkin Park', album: 'Minutes to Midnight', coverUrl: COV[16], previewUrl: SH(6), duration: 30 },
-    { title: 'American Idiot', artist: 'Green Day', album: 'American Idiot', coverUrl: COV[17], previewUrl: SH(7), duration: 30 },
-    { title: 'Walk', artist: 'Pantera', album: 'Vulgar Display of Power', coverUrl: COV[18], previewUrl: SH(8), duration: 30 },
-    { title: 'Schism', artist: 'Tool', album: 'Lateralus', coverUrl: COV[19], previewUrl: SH(9), duration: 30 },
-    { title: 'Freak on a Leash', artist: 'Korn', album: 'Follow the Leader', coverUrl: COV[0], previewUrl: SH(10), duration: 30 },
-    { title: 'Crawling', artist: 'Linkin Park', album: 'Hybrid Theory', coverUrl: COV[1], previewUrl: SH(11), duration: 30 },
-    { title: 'My Own Summer (Shove It)', artist: 'Deftones', album: 'Around the Fur', coverUrl: COV[2], previewUrl: SH(12), duration: 30 },
-    { title: 'Master of Puppets', artist: 'Metallica', album: 'Master of Puppets', coverUrl: COV[3], previewUrl: SH(13), duration: 30 },
-    { title: 'Run to the Hills', artist: 'Iron Maiden', album: 'The Number of the Beast', coverUrl: COV[4], previewUrl: SH(14), duration: 30 },
-    { title: 'Pretty Fly (For a White Guy)', artist: 'The Offspring', album: 'Americana', coverUrl: COV[5], previewUrl: SH(15), duration: 30 },
-    { title: 'Holiday', artist: 'Green Day', album: 'American Idiot', coverUrl: COV[6], previewUrl: SH(16), duration: 30 },
+    { title: 'Raining Blood', artist: 'Slayer', album: 'Reign in Blood', coverUrl: COV[7], previewUrl: SH(13), duration: 30 },
+    { title: "L'Enfant Sauvage", artist: 'Gojira', album: "L'Enfant Sauvage", coverUrl: COV[8], previewUrl: SH(14), duration: 30 },
+    { title: 'Hammer Smashed Face', artist: 'Cannibal Corpse', album: 'Tomb of the Mutilated', coverUrl: COV[9], previewUrl: SH(15), duration: 30 },
+    { title: 'Master of Puppets', artist: 'Metallica', album: 'Master of Puppets', coverUrl: COV[10], previewUrl: SH(16), duration: 30 },
+    { title: 'Twilight of the Thunder God', artist: 'Amon Amarth', album: 'Twilight of the Thunder God', coverUrl: COV[11], previewUrl: SH(1), duration: 30 },
+    { title: 'The Eagle Flies Alone', artist: 'Arch Enemy', album: 'Will to Power', coverUrl: COV[12], previewUrl: SH(2), duration: 30 },
+    { title: 'The Trooper', artist: 'Iron Maiden', album: 'Piece of Mind', coverUrl: COV[13], previewUrl: SH(3), duration: 30 },
+    { title: 'Psychosocial', artist: 'Slipknot', album: 'All Hope Is Gone', coverUrl: COV[14], previewUrl: SH(4), duration: 30 },
+    { title: 'Pull the Plug', artist: 'Death', album: 'Leprosy', coverUrl: COV[15], previewUrl: SH(5), duration: 30 },
+    { title: 'Holy Wars... The Punishment Due', artist: 'Megadeth', album: 'Rust in Peace', coverUrl: COV[16], previewUrl: SH(6), duration: 30 },
+    { title: 'Painkiller', artist: 'Judas Priest', album: 'Painkiller', coverUrl: COV[17], previewUrl: SH(7), duration: 30 },
+    { title: 'Slowly We Rot', artist: 'Obituary', album: 'Slowly We Rot', coverUrl: COV[18], previewUrl: SH(8), duration: 30 },
+    { title: 'Walk', artist: 'Pantera', album: 'Vulgar Display of Power', coverUrl: COV[19], previewUrl: SH(9), duration: 30 },
+    { title: 'Chop Suey!', artist: 'System of a Down', album: 'Toxicity', coverUrl: COV[0], previewUrl: SH(10), duration: 30 },
+    { title: 'Roots Bloody Roots', artist: 'Sepultura', album: 'Roots', coverUrl: COV[1], previewUrl: SH(11), duration: 30 },
+    { title: 'Are You Dead Yet?', artist: 'Children of Bodom', album: 'Are You Dead Yet?', coverUrl: COV[2], previewUrl: SH(12), duration: 30 },
+    { title: 'Redneck', artist: 'Lamb of God', album: 'Sacrament', coverUrl: COV[3], previewUrl: SH(13), duration: 30 },
+    { title: 'Progenies of the Great Apocalypse', artist: 'Dimmu Borgir', album: 'Death Cult Armageddon', coverUrl: COV[4], previewUrl: SH(14), duration: 30 },
+    { title: 'Pleasure to Kill', artist: 'Kreator', album: 'Pleasure to Kill', coverUrl: COV[5], previewUrl: SH(15), duration: 30 },
+    { title: 'Only for the Weak', artist: 'In Flames', album: 'Clayman', coverUrl: COV[6], previewUrl: SH(16), duration: 30 },
   ],
   fatigue: [
     { title: 'Breathe', artist: 'Pink Floyd', album: 'The Dark Side of the Moon', coverUrl: COV[11], previewUrl: SH(1), duration: 30 },
@@ -717,6 +723,26 @@ const dedup = (tracks: Track[]): Track[] => {
   });
 };
 
+// ─── FILTRAGE HEAVY / DEATH METAL (VIBE COLÉRIQUE) ───────────────────────────
+
+const HEAVY_DEATH_ARTISTS = [
+  'slayer', 'gojira', 'cannibal', 'amon amarth', 'arch enemy', 'death', 'obituary',
+  'metallica', 'iron maiden', 'slipknot', 'megadeth', 'judas priest', 'pantera',
+  'sepultura', 'bodom', 'lamb of god', 'dimmu', 'kreator', 'in flames', 'carcass',
+  'napalm', 'deicide', 'morbid angel', 'meshuggah', 'behemoth', 'opeth', 'mastodon',
+  'anthrax', 'exodus', 'testament', 'deathcore', 'metalcore', 'thrash', 'heavy metal',
+  'death metal', 'black metal', 'doom metal', 'power metal', 'graveworm', 'satyricon',
+  'mayhem', 'darkthrone', 'emperor', 'cradle of filth', 'machine head', 'trivium',
+  'hatebreed', 'municipal waste', 'suicidal tendencies', 'exhumed', 'dying fetus',
+  'aborted', 'decapitated', 'suffocation', 'cryptopsy', 'bolt thrower', 'entombed',
+  'dismember', 'vader', ' Nile', 'cannibal corpse'
+];
+
+const isHeavyOrDeathMetal = (track: Track): boolean => {
+  const text = `${track.title} ${track.artist} ${track.album || ''}`.toLowerCase();
+  return HEAVY_DEATH_ARTISTS.some(keyword => text.includes(keyword));
+};
+
 // ─── FONCTION PRINCIPALE ──────────────────────────────────────────────────────
 
 export const getPlaylistForMood = async (
@@ -850,12 +876,28 @@ export const getPlaylistForMood = async (
   ]);
 
   if (result && result.length > 0) {
-    const shuffled = shuffleArray(result);
-    if (shuffled.length >= 20) return shuffled.slice(0, 20);
-    const needed = 20 - shuffled.length;
-    return [...shuffled, ...localFallback(moodId, needed, false)];
+    let finalTracks = [...result];
+    if (finalTracks.length < 20) {
+      const needed = 20 - finalTracks.length;
+      finalTracks = [...finalTracks, ...localFallback(moodId, needed, false)];
+    }
+
+    if (moodId === 'colerique') {
+      const heavy = finalTracks.filter(isHeavyOrDeathMetal);
+      const others = finalTracks.filter(t => !isHeavyOrDeathMetal(t));
+      return [...shuffleArray(heavy), ...shuffleArray(others)].slice(0, 20);
+    }
+
+    const shuffled = shuffleArray(finalTracks);
+    return shuffled.slice(0, 20);
   }
 
   // Repli total sur le local
-  return localFallback(moodId, 20, false);
+  const fallbackTracks = localFallback(moodId, 20, false);
+  if (moodId === 'colerique') {
+    const heavy = fallbackTracks.filter(isHeavyOrDeathMetal);
+    const others = fallbackTracks.filter(t => !isHeavyOrDeathMetal(t));
+    return [...shuffleArray(heavy), ...shuffleArray(others)].slice(0, 20);
+  }
+  return fallbackTracks;
 };

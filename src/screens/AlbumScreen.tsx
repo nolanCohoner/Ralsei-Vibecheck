@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { StorageAccessFramework } from 'expo-file-system/legacy';
 const SAF = StorageAccessFramework;
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { Track } from '../utils/constants';
@@ -114,15 +115,69 @@ export const AlbumScreen: React.FC = () => {
     setFiltered(tracks.filter(t => t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q)));
   }, [query, tracks]);
 
-  // Si pas de pistes au montage -> ouvrir le picker automatiquement
-  const firstOpen = useRef(true);
+  // Chargement et persistance du dossier
   useEffect(() => {
-    if (firstOpen.current && tracks.length === 0) {
-      firstOpen.current = false;
-      // Petit delai pour que la nav soit complete
-      setTimeout(() => pickFiles(), 300);
-    }
+    const loadSavedData = async () => {
+      try {
+        const savedUri = await AsyncStorage.getItem('vibecheck_local_folder_uri');
+        const savedName = await AsyncStorage.getItem('vibecheck_local_folder_name');
+        const savedTracksJson = await AsyncStorage.getItem('vibecheck_local_tracks');
+
+        let loadedTracks: Track[] = [];
+        if (savedTracksJson) {
+          loadedTracks = JSON.parse(savedTracksJson);
+          setTracks(loadedTracks);
+          setFiltered(loadedTracks);
+        }
+        if (savedName) {
+          setFolderName(savedName);
+        }
+
+        if (savedUri) {
+          // Scanner silencieusement en arrière-plan pour actualiser la liste des morceaux
+          scanDirectorySilently(savedUri, savedName || 'Dossier', loadedTracks);
+        } else {
+          // Si aucun dossier n'est enregistré : ouvrir automatiquement le picker de dossier
+          setTimeout(() => pickFolder(), 500);
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    };
+    loadSavedData();
   }, []);
+
+  const scanDirectorySilently = async (uri: string, dName: string, existingTracks: Track[]) => {
+    try {
+      const files = await SAF.readDirectoryAsync(uri);
+      const audio = files.filter(isAudio);
+      const newTracks: Track[] = audio
+        .map((fUri: string) => ({
+          id: fUri,
+          title: cleanTitle(getFilename(fUri)),
+          artist: dName,
+          album: dName,
+          coverUrl: '',
+          previewUrl: fUri,
+          duration: 0
+        }))
+        .sort((a: Track, b: Track) => a.title.localeCompare(b.title));
+
+      const existingUrls = new Set(existingTracks.map(t => t.previewUrl));
+      const newUrls = new Set(newTracks.map(t => t.previewUrl));
+      
+      const hasChanges = newTracks.length !== existingTracks.length ||
+        [...newUrls].some(url => !existingUrls.has(url));
+
+      if (hasChanges) {
+        setTracks(newTracks);
+        setFiltered(newTracks);
+        await AsyncStorage.setItem('vibecheck_local_tracks', JSON.stringify(newTracks));
+      }
+    } catch (e) {
+      console.warn("Scan en arrière-plan échoué, la permission a peut-être été révoquée :", e);
+    }
+  };
 
   // ── Scan dossier ─────────────────────────────────────────────────────────
   const pickFolder = async () => {
@@ -135,37 +190,71 @@ export const AlbumScreen: React.FC = () => {
       const decodedDir = decodeURIComponent(result.directoryUri);
       const parts = decodedDir.replace(/\/$/, '').split('/');
       const dName = (parts[parts.length-1] || 'Dossier').replace(/^primary:/,'').replace(/%3A/gi,'/');
+      
       setFolderName(dName);
+      
       const newTracks: Track[] = audio
-        .map((uri: string) => ({ id: uri, title: cleanTitle(getFilename(uri)), artist: dName, album: dName, coverUrl: '', previewUrl: uri, duration: 0 }))
+        .map((fUri: string) => ({
+          id: fUri,
+          title: cleanTitle(getFilename(fUri)),
+          artist: dName,
+          album: dName,
+          coverUrl: '',
+          previewUrl: fUri,
+          duration: 0
+        }))
         .sort((a: Track, b: Track) => a.title.localeCompare(b.title));
-      setTracks(prev => {
-        const ex = new Set(prev.map(t => t.previewUrl));
-        const merged = [...prev, ...newTracks.filter(t => !ex.has(t.previewUrl))].sort((a,b)=>a.title.localeCompare(b.title));
-        setFiltered(merged);
-        return merged;
-      });
+
+      setTracks(newTracks);
+      setFiltered(newTracks);
       setScanning(false);
-    } catch (e) { setScanning(false); console.warn(e); }
+
+      // Persister l'URI, le nom et les morceaux
+      await AsyncStorage.setItem('vibecheck_local_folder_uri', result.directoryUri);
+      await AsyncStorage.setItem('vibecheck_local_folder_name', dName);
+      await AsyncStorage.setItem('vibecheck_local_tracks', JSON.stringify(newTracks));
+    } catch (e) {
+      setScanning(false);
+      console.warn(e);
+    }
   };
 
-  // ── Picker fichiers individuels ───────────────────────────────────────────
+  // ── Picker fichiers individuels (Fallback) ─────────────────────────────────
   const pickFiles = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({ type: 'audio/*', multiple: true, copyToCacheDirectory: false });
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'audio/*',
+        multiple: true,
+        copyToCacheDirectory: false
+      });
       if (result.canceled) return;
+      
       const newTracks: Track[] = result.assets.map((a, i) => ({
-        id: a.uri + i, title: cleanTitle(a.name || 'Titre inconnu'),
-        artist: 'Local', album: '', coverUrl: '', previewUrl: a.uri, duration: 0,
+        id: a.uri + '-' + Date.now() + '-' + i,
+        title: cleanTitle(a.name || 'Titre inconnu'),
+        artist: 'Fichiers Importés',
+        album: 'Sélection manuelle',
+        coverUrl: '',
+        previewUrl: a.uri,
+        duration: 0,
       }));
+
       setTracks(prev => {
         const ex = new Set(prev.map(t => t.previewUrl));
         const merged = [...prev, ...newTracks.filter(t => !ex.has(t.previewUrl))].sort((a,b)=>a.title.localeCompare(b.title));
         setFiltered(merged);
-        if (merged.length > 0 && !folderName) setFolderName('Fichiers');
+        
+        // Enregistrer la liste manuelle
+        AsyncStorage.setItem('vibecheck_local_tracks', JSON.stringify(merged));
+        if (!folderName) {
+          setFolderName('Fichiers Importés');
+          AsyncStorage.setItem('vibecheck_local_folder_name', 'Fichiers Importés');
+        }
         return merged;
       });
-    } catch (e) { console.warn(e); }
+    } catch (e) {
+      console.warn(e);
+    }
   };
 
   const handlePlay = (track: Track) => playTrack(track, filtered, '');
@@ -325,21 +414,17 @@ export const AlbumScreen: React.FC = () => {
               const r = filtered[Math.floor(Math.random() * filtered.length)];
               handlePlay(r);
             }}
+            activeOpacity={0.7}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <PixelIcon type="shuffle" color={isShuffleActive ? C.GREEN : C.WHITE} size={10} />
-              <Text style={[st.sortBtnTxt, { color: isShuffleActive ? C.GREEN : C.WHITE }]}>Aléatoire</Text>
-            </View>
+            <PixelIcon type="shuffle" color={isShuffleActive ? C.GREEN : C.WHITE} size={16} />
           </TouchableOpacity>
           {/* Play all */}
           <TouchableOpacity
             style={[st.sortBtn, st.sortBtnPlay, isPlaying && { backgroundColor: C.GREEN, borderColor: C.GREEN }]}
             onPress={() => filtered.length > 0 && handlePlay(filtered[0])}
+            activeOpacity={0.7}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <PixelIcon type="play" color={isPlaying ? C.BG : C.WHITE} size={8} />
-              <Text style={[st.sortBtnTxt, { color: isPlaying ? C.BG : C.WHITE }]}>Tout lire</Text>
-            </View>
+            <PixelIcon type="play" color={isPlaying ? C.BG : C.WHITE} size={16} />
           </TouchableOpacity>
         </View>
       </View>
@@ -354,8 +439,25 @@ export const AlbumScreen: React.FC = () => {
           {tracks.length === 0 ? (
             <>
               <Image source={RALSEI} style={{ width: 64, height: 88 }} resizeMode="contain" />
-              <Text style={st.emptyTitle}>AUCUNE PISTE</Text>
-              <Text style={st.emptyText}>Appuie sur ＋ pour ajouter{'\n'}des fichiers audio.</Text>
+              <Text style={st.emptyTitle}>AUCUN DOSSIER LIÉ</Text>
+              <Text style={st.emptyText}>Choisis un dossier contenant tes{'\n'}fichiers musicaux (.mp3, .wav, ...)</Text>
+              <TouchableOpacity
+                style={st.selectFolderBtn}
+                onPress={pickFolder}
+                activeOpacity={0.8}
+              >
+                <Text style={st.selectFolderBtnTxt}>SÉLECTIONNER UN DOSSIER</Text>
+              </TouchableOpacity>
+              <Text style={st.tipText}>
+                💡 Astuce Android : Si ton téléphone refuse le dossier Download, crée un sous-dossier (ex: "Download/Musiques") et déplace tes fichiers dedans pour pouvoir le lier, ou importe des morceaux un par un.
+              </Text>
+              <TouchableOpacity
+                style={st.fallbackBtn}
+                onPress={pickFiles}
+                activeOpacity={0.8}
+              >
+                <Text style={st.fallbackBtnTxt}>OU IMPORTER DES FICHIERS UN PAR UN</Text>
+              </TouchableOpacity>
             </>
           ) : (
             <>
@@ -438,14 +540,13 @@ const st = StyleSheet.create({
   // Barre de tri
   sortBar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 14, paddingVertical: 8,
+    paddingHorizontal: 14, paddingVertical: 6,
     backgroundColor: 'rgba(22, 22, 22, 0.80)', borderBottomWidth: 1, borderBottomColor: C.BORDER,
   },
   sortLabel:    { fontFamily: 'PressStart2P-Regular', fontSize: 6, color: C.GRAY },
   sortRight:    { flexDirection: 'row', gap: 8 },
-  sortBtn:      { paddingVertical: 5, paddingHorizontal: 9, borderWidth: 1, borderColor: C.GREEN_BDR, backgroundColor: C.GREEN_DIM },
-  sortBtnPlay:  { backgroundColor: C.GREEN, borderColor: C.GREEN },
-  sortBtnTxt:   { fontFamily: 'PressStart2P-Regular', fontSize: 5, color: C.GREEN, letterSpacing: 0.5 },
+  sortBtn:      { width: 34, height: 34, borderWidth: 1.5, borderColor: C.BORDER, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center' },
+  sortBtnPlay:  { backgroundColor: C.GREEN, borderColor: '#FFFFFF' },
 
   // Liste
   listContent: { paddingBottom: 120 },
@@ -507,6 +608,43 @@ const st = StyleSheet.create({
   scanTxt:    { fontFamily: 'PressStart2P-Regular', fontSize: 8, color: C.GREEN, letterSpacing: 1 },
   emptyTitle: { fontFamily: 'PressStart2P-Regular', fontSize: 11, color: C.WHITE, textAlign: 'center', letterSpacing: 1 },
   emptyText:  { fontFamily: 'PressStart2P-Regular', fontSize: 7,  color: C.GRAY,  textAlign: 'center', lineHeight: 14 },
+  selectFolderBtn: {
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    backgroundColor: 'rgba(91, 200, 160, 0.15)',
+  },
+  selectFolderBtnTxt: {
+    fontFamily: 'PressStart2P-Regular',
+    fontSize: 7,
+    color: '#5BC8A0',
+    textAlign: 'center',
+  },
+  tipText: {
+    fontFamily: 'PressStart2P-Regular',
+    fontSize: 6,
+    color: '#888888',
+    textAlign: 'center',
+    lineHeight: 12,
+    marginTop: 16,
+    paddingHorizontal: 12,
+  },
+  fallbackBtn: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: '#888888',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+  },
+  fallbackBtnTxt: {
+    fontFamily: 'PressStart2P-Regular',
+    fontSize: 6,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
 });
 
 export default AlbumScreen;

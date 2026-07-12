@@ -15,8 +15,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signUp, signIn } from '../services/auth';
+import { SoulIcon } from '../components/SoulIcon';
+import { DarkFountain } from '../components/DarkFountain';
+import { PixelIcon } from '../components/PixelIcon';
 
 const LogoImg = require('../../ConnexionLogin/logo.png');
+const RalseiImg = require('../assets/ralsei/Joyeux.png');
 
 // Palette VibeCheck
 const C = {
@@ -70,6 +74,12 @@ export const LoginScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <StatusBar barStyle="light-content" backgroundColor="#0F120F" />
+      
+      {/* === FOND ANIMÉ DARK FOUNTAIN === */}
+      <View style={styles.fountainBackground} pointerEvents="none">
+        <DarkFountain size={220} />
+      </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -85,122 +95,145 @@ export const LoginScreen: React.FC = () => {
             <Text style={styles.tagline}>Ton humeur, ta musique.</Text>
           </View>
 
-          {/* === FORMULAIRE === */}
+          {/* === AVATAR RALSEI D'ACCUEIL === */}
+          <View style={styles.ralseiHeaderContainer}>
+            <Image source={RalseiImg} style={styles.ralseiHeaderImage} resizeMode="contain" />
+          </View>
+
+          {/* === FORMULAIRE DOUBLE BORDURE === */}
           <View style={styles.formCard}>
-            {/* Titre */}
-            <View style={styles.formTitleRow}>
-              <View style={styles.formTitleDot} />
-              <Text style={styles.formTitle}>
-                {isRegistering ? 'CRÉER UN COMPTE' : 'CONNEXION'}
-              </Text>
-            </View>
-
-            {/* Erreur */}
-            {errorMsg && (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>! {errorMsg}</Text>
+            <View style={styles.formCardInner}>
+              {/* Titre */}
+              <View style={styles.formTitleRow}>
+                <View style={styles.formTitleDot} />
+                <Text style={styles.formTitle}>
+                  {isRegistering ? 'CRÉER UN COMPTE' : 'CONNEXION'}
+                </Text>
               </View>
-            )}
 
-            {/* Email */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>EMAIL</Text>
-              <View style={[
-                styles.inputWrapper,
-                focusedField === 'email' && styles.inputWrapperFocused
-              ]}>
-                <Text style={styles.inputIcon}>@</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="adresse@email.com"
-                  placeholderTextColor="#7A8A7A"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  autoComplete="email"
-                  onFocus={() => setFocusedField('email')}
-                  onBlur={() => setFocusedField(null)}
-                />
+              {/* Erreur */}
+              {errorMsg && (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>! {errorMsg}</Text>
+                </View>
+              )}
+
+              {/* Email */}
+              <View style={styles.fieldGroup}>
+                <View style={styles.labelRow}>
+                  {focusedField === 'email' && (
+                    <View style={styles.soulIndicator}>
+                      <SoulIcon size={10} color="#5BC8A0" />
+                    </View>
+                  )}
+                  <Text style={styles.fieldLabel}>EMAIL</Text>
+                </View>
+                <View style={[
+                  styles.inputWrapper,
+                  focusedField === 'email' && styles.inputWrapperFocused
+                ]}>
+                  <View style={styles.inputIconWrapper}>
+                    <PixelIcon type="mail" color="#A0B0A0" size={16} />
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="adresse@email.com"
+                    placeholderTextColor="#7A8A7A"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    autoComplete="email"
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </View>
               </View>
-            </View>
 
-            {/* Mot de passe */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>MOT DE PASSE</Text>
-              <View style={[
-                styles.inputWrapper,
-                focusedField === 'password' && styles.inputWrapperFocused
-              ]}>
-                <Text style={styles.inputIcon}>▪</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="••••••••"
-                  placeholderTextColor="#7A8A7A"
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
-                  autoCapitalize="none"
-                  autoComplete="password"
-                  onFocus={() => setFocusedField('password')}
-                  onBlur={() => setFocusedField(null)}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeBtn}
-                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                >
-                  <Text style={[styles.eyeText, showPassword && styles.eyeTextActive]}>
-                    {showPassword ? '●' : '○'}
-                  </Text>
-                </TouchableOpacity>
+              {/* Mot de passe */}
+              <View style={styles.fieldGroup}>
+                <View style={styles.labelRow}>
+                  {focusedField === 'password' && (
+                    <View style={styles.soulIndicator}>
+                      <SoulIcon size={10} color="#5BC8A0" />
+                    </View>
+                  )}
+                  <Text style={styles.fieldLabel}>MOT DE PASSE</Text>
+                </View>
+                <View style={[
+                  styles.inputWrapper,
+                  focusedField === 'password' && styles.inputWrapperFocused
+                ]}>
+                  <View style={styles.inputIconWrapper}>
+                    <PixelIcon type="lock" color="#A0B0A0" size={16} />
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="••••••••"
+                    placeholderTextColor="#7A8A7A"
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={setPassword}
+                    autoCapitalize="none"
+                    autoComplete="password"
+                    onFocus={() => setFocusedField('password')}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeBtn}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                  >
+                    <PixelIcon type="eye" color={showPassword ? C.TEAL : '#A0B0A0'} size={16} />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
 
-            {/* Bouton principal avec dégradé style Deltarune */}
-            <TouchableOpacity
-              onPress={handleSubmit}
-              style={styles.submitBtn}
-              disabled={loading}
-              activeOpacity={0.9}
-            >
-              <LinearGradient
-                colors={GRADIENT_COLORS}
-                locations={GRADIENT_LOCATIONS}
-                style={styles.btnGradient}
+              {/* Bouton principal avec dégradé style Deltarune */}
+              <TouchableOpacity
+                onPress={handleSubmit}
+                style={styles.submitBtn}
+                disabled={loading}
+                activeOpacity={0.9}
               >
-                {loading ? (
-                  <ActivityIndicator color={C.INK} size="small" />
-                ) : (
-                  <Text style={styles.submitText}>
-                    {isRegistering ? 'CREER MON COMPTE' : 'SE CONNECTER'}
-                  </Text>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={GRADIENT_COLORS}
+                  locations={GRADIENT_LOCATIONS}
+                  style={styles.btnGradient}
+                >
+                  {loading ? (
+                    <ActivityIndicator color={C.INK} size="small" />
+                  ) : (
+                    <Text style={styles.submitText}>
+                      {isRegistering ? 'CREER MON COMPTE' : 'SE CONNECTER'}
+                    </Text>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
 
-            {/* Séparateur */}
-            <View style={styles.separator}>
-              <View style={styles.separatorLine} />
-              <Text style={styles.separatorText}>ou</Text>
-              <View style={styles.separatorLine} />
+              {/* Séparateur */}
+              <View style={styles.separator}>
+                <View style={styles.separatorLine} />
+                <Text style={styles.separatorText}>ou</Text>
+                <View style={styles.separatorLine} />
+              </View>
+
+              {/* Bouton secondaire — style lien TEAL souligné */}
+              <TouchableOpacity
+                onPress={handleToggleMode}
+                style={styles.secondaryBtn}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.secondaryText}>
+                  {isRegistering
+                    ? "Déjà un compte ?"
+                    : "Pas encore inscrit ?"}
+                </Text>
+                <Text style={styles.secondaryLink}>
+                  {isRegistering ? ' Se connecter' : " S'inscrire"}
+                </Text>
+              </TouchableOpacity>
             </View>
-
-            {/* Bouton secondaire — style lien TEAL souligné */}
-            <TouchableOpacity
-              onPress={handleToggleMode}
-              style={styles.secondaryBtn}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.secondaryText}>
-                {isRegistering
-                  ? "Déjà un compte ?"
-                  : "Pas encore inscrit ?"}
-              </Text>
-              <Text style={styles.secondaryLink}>
-                {isRegistering ? ' Se connecter' : " S'inscrire"}
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -212,8 +245,16 @@ const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
     backgroundColor: '#0F120F',
+    position: 'relative',
   },
-  container: { flex: 1 },
+  fountainBackground: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.18,
+    zIndex: 0,
+  },
+  container: { flex: 1, zIndex: 1 },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -226,7 +267,7 @@ const styles = StyleSheet.create({
   logoSection: {
     alignItems: 'center',
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 0,
   },
   logoImage: {
     width: 220,
@@ -240,13 +281,30 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 
-  // Carte formulaire
+  // Ralsei Header
+  ralseiHeaderContainer: {
+    alignItems: 'center',
+    marginBottom: -16,
+    zIndex: 3,
+  },
+  ralseiHeaderImage: {
+    width: 64,
+    height: 64,
+  },
+
+  // Carte formulaire double bordure
   formCard: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: '#FFFFFF',
-    padding: 24,
+    padding: 4,
     gap: 0,
+  },
+  formCardInner: {
+    backgroundColor: 'rgba(15, 18, 15, 0.90)',
+    borderWidth: 1.5,
+    borderColor: C.TEAL,
+    padding: 20,
   },
   formTitleRow: {
     flexDirection: 'row',
@@ -283,11 +341,18 @@ const styles = StyleSheet.create({
 
   // Champs
   fieldGroup: { marginBottom: 16 },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  soulIndicator: {
+    marginRight: 6,
+  },
   fieldLabel: {
     fontSize: 7,
     fontFamily: 'PressStart2P-Regular',
     color: '#FFFFFF',
-    marginBottom: 6,
     letterSpacing: 1,
   },
   inputWrapper: {
@@ -304,13 +369,11 @@ const styles = StyleSheet.create({
     borderColor: C.TEAL,
     borderWidth: 2,
   },
-  inputIcon: {
-    fontSize: 12,
-    color: C.INK_LIGHT,
+  inputIconWrapper: {
     marginRight: 10,
-    fontFamily: 'PressStart2P-Regular',
-    width: 16,
-    textAlign: 'center',
+    width: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   input: {
     flex: 1,
@@ -320,13 +383,10 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 0,
   },
-  eyeBtn: { padding: 4 },
-  eyeText: {
-    fontSize: 14,
-    color: '#A0B0A0',
-  },
-  eyeTextActive: {
-    color: C.TEAL,
+  eyeBtn: {
+    padding: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // Bouton principal
