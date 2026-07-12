@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { Track } from '../utils/constants';
+import { addTrackPlay } from '../services/db';
 
 interface AudioPlayerContextType {
   currentTrack: Track | null;
@@ -10,7 +11,7 @@ interface AudioPlayerContextType {
   playlist: Track[];
   isRepeat: boolean;
   setIsRepeat: (v: boolean) => void;
-  playTrack: (track: Track, newPlaylist?: Track[]) => Promise<void>;
+  playTrack: (track: Track, newPlaylist?: Track[], mood?: string) => Promise<void>;
   pause: () => Promise<void>;
   resume: () => Promise<void>;
   next: () => Promise<void>;
@@ -74,7 +75,7 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const playTrack = async (track: Track, newPlaylist?: Track[]) => {
+  const playTrack = async (track: Track, newPlaylist?: Track[], mood: string = '') => {
     // Incrémenter le token AVANT tout await pour invalider les appels précédents
     const myToken = ++playTokenRef.current;
 
@@ -115,6 +116,8 @@ export const AudioPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setCurrentTrack(track);
       setIsPlaying(true);
       isPlayingRef.current = true;
+      // Enregistrer l'écoute dans l'historique
+      addTrackPlay(track, mood).catch(() => {});
     } catch (_error) {
       if (playTokenRef.current === myToken) {
         setIsPlaying(false);

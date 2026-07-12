@@ -11,11 +11,12 @@ import {
   ScrollView,
   Modal,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCurrentUser, signOut } from '../services/auth';
-import { isMockMode } from '../services/supabase';
-import { getMoodHistory } from '../services/db';
+import { isMockMode, supabase } from '../services/supabase';
+import { getMoodHistory, calcStreakDays, getInstallDate } from '../services/db';
 import { MOODS } from '../utils/constants';
 import { PixelEmoji } from '../components/PixelEmoji';
 
@@ -48,9 +49,11 @@ const AVATAR_KEY = 'vibecheck_avatar';
 
 export const ProfileScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
   const [avatarId, setAvatarId] = useState('default');
   const [avatarPickerVisible, setAvatarPickerVisible] = useState(false);
-  const [stats, setStats] = useState({ total: 0, dominantMood: '', streak: 0 });
+  const [stats, setStats] = useState({ total: 0, dominantMood: '', streak: 0, installDate: '' });
   const user = getCurrentUser();
 
   useEffect(() => {
@@ -79,22 +82,16 @@ export const ProfileScreen: React.FC = () => {
       history.forEach(h => { counts[h.mood] = (counts[h.mood] || 0) + 1; });
       const dominantMood = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
 
-      // Streak
-      let streak = 0;
-      if (history.length > 0) {
-        streak = 1;
-        const sorted = [...history].sort((a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        for (let i = 0; i < sorted.length - 1; i++) {
-          const d1 = new Date(sorted[i].createdAt);
-          const d2 = new Date(sorted[i + 1].createdAt);
-          if (Math.abs(d1.getDate() - d2.getDate()) <= 1 && d1.getMonth() === d2.getMonth()) streak++;
-          else break;
-        }
-      }
+      // Streak sur jours calendaires uniques (pas les sessions)
+      const streak = calcStreakDays(history);
 
-      setStats({ total, dominantMood, streak });
+      // Date d'installation
+      const installIso = await getInstallDate();
+      const installDate = installIso
+        ? new Date(installIso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '';
+
+      setStats({ total, dominantMood, streak, installDate });
     } catch (_err) {}
   };
 
@@ -102,6 +99,33 @@ export const ProfileScreen: React.FC = () => {
     setLoading(true);
     try { await signOut(); } catch (_err) {}
     finally { setLoading(false); }
+  };
+
+  const handleResetData = async () => {
+    setResetModalVisible(false);
+    setResetting(true);
+    try {
+      const user = getCurrentUser();
+      if (!user) return;
+
+      if (isMockMode) {
+        // Effacer historique et favoris du AsyncStorage
+        await AsyncStorage.removeItem(`vibecheck_history_${user.id}`);
+        await AsyncStorage.removeItem(`vibecheck_favorites_${user.id}`);
+      } else {
+        // Effacer dans Supabase
+        await supabase!.from('mood_history').delete().eq('user_id', user.id);
+        await supabase!.from('favorites').delete().eq('user_id', user.id);
+      }
+
+      // Réinitialiser les stats affichées
+      setStats({ total: 0, dominantMood: '', streak: 0 });
+      Alert.alert('✅ Réinitialisation', 'Tes données ont été effacées.\nTon compte et ton avatar sont conservés.');
+    } catch (_err) {
+      Alert.alert('Erreur', 'Impossible de réinitialiser les données.');
+    } finally {
+      setResetting(false);
+    }
   };
 
   const currentAvatar = AVATARS.find(a => a.id === avatarId) || AVATARS[0];
@@ -179,6 +203,12 @@ export const ProfileScreen: React.FC = () => {
               <Text style={styles.statItemLabel}>JOURS 🔥</Text>
             </View>
           </View>
+          {stats.installDate ? (
+            <View style={styles.installRow}>
+              <Text style={styles.installLabel}>DEPUIS LE</Text>
+              <Text style={styles.installValue}>{stats.installDate}</Text>
+            </View>
+          ) : null}
         </View>
 
         {/* Infos compte */}
@@ -207,6 +237,20 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </View>
 
+        {/* Bouton réinitialiser les données */}
+        <TouchableOpacity
+          onPress={() => setResetModalVisible(true)}
+          style={styles.resetBtn}
+          disabled={resetting}
+          activeOpacity={0.85}
+        >
+          {resetting ? (
+            <ActivityIndicator color={C.INK_LIGHT} size="small" />
+          ) : (
+            <Text style={styles.resetText}>♻ REINITIALISER MES STATS</Text>
+          )}
+        </TouchableOpacity>
+
         {/* Bouton déconnexion — outline au repos, rouge au press */}
         <TouchableOpacity
           onPress={handleLogout}
@@ -223,6 +267,45 @@ export const ProfileScreen: React.FC = () => {
 
         <View style={{ height: 140 }} />
       </ScrollView>
+
+      {/* Modal confirmation réinitialisation */}
+      <Modal
+        visible={resetModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setResetModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setResetModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.resetModal}>
+                <Text style={styles.resetModalTitle}>⚠ ATTENTION</Text>
+                <Text style={styles.resetModalBody}>
+                  Cette action va supprimer :{`\n`}
+                  • Tout ton historique d'humeurs{`\n`}
+                  • Tous tes favoris musicaux{`\n\n`}
+                  Ton compte et ton avatar seront conservés.{`\n\n`}
+                  Es-tu sûr(e) ?
+                </Text>
+                <View style={styles.resetModalBtns}>
+                  <TouchableOpacity
+                    style={styles.resetModalCancel}
+                    onPress={() => setResetModalVisible(false)}
+                  >
+                    <Text style={styles.resetModalCancelTxt}>ANNULER</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.resetModalConfirm}
+                    onPress={handleResetData}
+                  >
+                    <Text style={styles.resetModalConfirmTxt}>CONFIRMER</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
 
       {/* Modal sélecteur d'avatar */}
       <Modal
@@ -391,6 +474,27 @@ const styles = StyleSheet.create({
     color: C.INK_LIGHT,
     textAlign: 'center',
   },
+  installRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: C.SAGE_MID,
+  },
+  installLabel: {
+    fontSize: 5.5,
+    fontFamily: 'PressStart2P-Regular',
+    color: C.INK_LIGHT,
+    letterSpacing: 0.5,
+  },
+  installValue: {
+    fontSize: 6,
+    fontFamily: 'PressStart2P-Regular',
+    color: C.TEAL,
+  },
 
   // Infos
   infoRow: {
@@ -416,6 +520,24 @@ const styles = StyleSheet.create({
   infoStatus: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 },
   statusDot: { width: 8, height: 8 },
 
+  // Bouton reset
+  resetBtn: {
+    height: 48,
+    borderWidth: 2,
+    borderColor: C.SAGE_DARK,
+    backgroundColor: C.SAGE_LIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  resetText: {
+    color: C.INK_LIGHT,
+    fontSize: 7,
+    fontFamily: 'PressStart2P-Regular',
+    letterSpacing: 1,
+  },
+
   // Bouton logout — outline au repos
   logoutBtn: {
     height: 52,
@@ -424,13 +546,69 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+    marginTop: 0,
   },
   logoutText: {
     color: C.ERROR,
     fontSize: 8,
     fontFamily: 'PressStart2P-Regular',
     letterSpacing: 1,
+  },
+
+  // Modal reset
+  resetModal: {
+    margin: 24,
+    backgroundColor: C.CREAM,
+    borderWidth: 3,
+    borderColor: C.SAGE_DARK,
+    padding: 20,
+    gap: 16,
+  },
+  resetModalTitle: {
+    fontSize: 10,
+    fontFamily: 'PressStart2P-Regular',
+    color: C.INK,
+    textAlign: 'center',
+    letterSpacing: 1,
+  },
+  resetModalBody: {
+    fontSize: 7,
+    fontFamily: 'PressStart2P-Regular',
+    color: C.INK_LIGHT,
+    lineHeight: 16,
+    textAlign: 'left',
+  },
+  resetModalBtns: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  resetModalCancel: {
+    flex: 1,
+    height: 44,
+    borderWidth: 2,
+    borderColor: C.SAGE_DARK,
+    backgroundColor: C.SAGE_LIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetModalCancelTxt: {
+    fontSize: 7,
+    fontFamily: 'PressStart2P-Regular',
+    color: C.INK_LIGHT,
+  },
+  resetModalConfirm: {
+    flex: 1,
+    height: 44,
+    borderWidth: 2,
+    borderColor: C.ERROR,
+    backgroundColor: C.ERROR,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetModalConfirmTxt: {
+    fontSize: 7,
+    fontFamily: 'PressStart2P-Regular',
+    color: '#FFF',
   },
 
   // Modal avatar

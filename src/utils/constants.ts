@@ -118,3 +118,13 @@ export interface MoodHistoryEntry {
   mood: string;
   createdAt: string;
 }
+
+export interface TrackPlayEntry {
+  id: string;
+  trackId: string;
+  title: string;
+  artist: string;
+  coverUrl: string;
+  mood: string; // Humeur active quand la chanson a été écoutée
+  playedAt: string;
+}

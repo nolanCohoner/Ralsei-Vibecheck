@@ -129,7 +129,7 @@ export const PlaylistScreen: React.FC<any> = ({ route, navigation }) => {
     }
   };
 
-  const handlePlayTrack = (track: Track) => playTrack(track, tracks);
+  const handlePlayTrack = (track: Track) => playTrack(track, tracks, moodName);
 
   const renderTrackItem = ({ item, index }: { item: Track; index: number }) => {
     const isCurrent = currentTrack?.id === item.id;

@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AudioPlayerProvider } from './src/hooks/useAudioPlayer';
 import { initAuth, onAuthStateChange, UserSession } from './src/services/auth';
+import { initInstallDate } from './src/services/db';
 import { useFonts, PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 
 // Écrans
@@ -141,6 +142,8 @@ export default function App() {
 
   useEffect(() => {
     const setupAuth = async () => {
+      // Enregistrer la date d'installation au tout premier lancement (idempotent)
+      await initInstallDate();
       const initialUser = await initAuth();
       setUser(initialUser);
       setInitializing(false);
