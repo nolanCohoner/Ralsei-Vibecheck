@@ -1,13 +1,13 @@
-# 🎵 VibeCheck — Découvre ta musique selon ton humeur
+# VibeCheck — Découvre ta musique selon ton humeur
 
 Projet réalisé par **Nolan Cohoner** (M1 Développeur Full Stack) dans le cadre de l'Évaluation Finale du module **React Native M1** — SUP de VINCI.
 
 ---
 
-## 📝 Description du projet
+## Description du projet
 **VibeCheck** est une application mobile musicale innovante construite autour de l'univers visuel et sonore rétro de *Deltarune / Undertale*. L'application permet à l'utilisateur de choisir son humeur parmi plusieurs états émotionnels pour générer instantanément une playlist de 20 morceaux via l'API Deezer, d'écouter les extraits audio, de sauvegarder ses favoris et d'enregistrer l'historique de ses humeurs.
 
-### 🎨 Direction Artistique & UI/UX
+### Direction Artistique & UI/UX
 L'application adopte une charte **pixel art vert naturel** centrée sur le personnage de *Ralsei* et le thème de la *Fontaine Sombre* :
 - **Arrière-plan animé en plein écran** : Reproduction de la *Dark Fountain* avec une brume verte qui s'élève de manière fluide.
 - **Cadres RPG rétro** : Double bordure blanche et verte style boîte de dialogue Deltarune.
@@ -17,13 +17,13 @@ L'application adopte une charte **pixel art vert naturel** centrée sur le perso
 
 ---
 
-## 👥 Composition de l'équipe
+## Composition de l'équipe
 - **Nolan Cohoner** (M1 Dev Full Stack) : Développeur unique (Projet réalisé en **solo**).
   - *Parties traitées* : Création et structure du projet, intégration de l'API Deezer, authentification et base de données Supabase, navigation, lecteur audio global (`expo-av`), intégration et gestion des effets sonores interactifs (SFX), design et composants pixel art natifs, historique d'humeurs graphiques, et export de playlists.
 
 ---
 
-## 📦 Application Fonctionnelle & APK
+## Application Fonctionnelle & APK
 * **APK Android** : L'application a été compilée avec succès dans le cloud Expo via **EAS Build**.
 * **Téléchargement** :
   - **Lien de téléchargement direct** : [Télécharger l'APK VibeCheck sur Expo](https://expo.dev/accounts/nolancohoner/projects/vibecheck/builds/eff606fb-145a-4763-9f51-b79ada9b4b67) (disponible également en scannant le QR code d'installation sur la page de build).
@@ -31,7 +31,7 @@ L'application adopte une charte **pixel art vert naturel** centrée sur le perso
 
 ---
 
-## 🚀 Instructions d'installation et de lancement (Local)
+## Instructions d'installation et de lancement (Local)
 
 ### 1. Cloner le projet
 ```bash
@@ -64,7 +64,7 @@ Scannez le QR code affiché avec votre application **Expo Go** (sur iOS ou Andro
 
 ---
 
-## 📚 Librairies utilisées et justifications
+## Librairies utilisées et justifications
 
 1. **Navigation : `@react-navigation/native` (+ Stack & Bottom Tabs)**
    - *Justification* : Standard officiel de React Native pour gérer proprement le routing, la pile d'écrans (Stack) et le menu principal (Tab Navigator).
@@ -83,7 +83,7 @@ Scannez le QR code affiché avec votre application **Expo Go** (sur iOS ou Andro
 
 ---
 
-## ⚙️ Exigences du Cahier des Charges Remplies
+## Exigences du Cahier des Charges Remplies
 
 * **Authentification** : Inscription, connexion et déconnexion via Supabase Auth (email + mot de passe) (100% complet).
 * **Sélecteur d'humeur** : Carrousel 3D interactif et animé pour choisir parmi 6 humeurs obligatoires (Joyeux, Nostalgique, Énergique, Mélancolique, Concentré, Festif) + d'autres humeurs bonus (Colérique, Amoureux, Fatigué) (100% complet).
